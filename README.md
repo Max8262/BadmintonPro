@@ -1,6 +1,12 @@
 # BadmintonPro
 Badminton Pro is a software dedicated to the training and improvements of badminton amateurs. With the increase of people being interested in badminton, we propose a software for amateurs to improve. Badminton Pro is defined to have several features, we would like the user to just film a long video, then Badminton Pro would auto-edit the long videos to small clips, these clips would have to be a swing of the racket. Then Badminton would classify what just happened in this clip alone. Finally, we would use a rule-based model using a HPE(Human Pose Estimation Model) to figure out what pose error was present in the clip. (We would also want this system architecture to be expanded to other sports as well : Tennis, Squatch, and so on…….). In this Repo, we will be teaching you how to make your own badminton assistant. 
 
+## What you would learn......
+1. How to run and choose HPE models.
+2. How to run, train, and evaluate YOLO models.
+3. How to make&compare your own pose classifiers.
+4. How to make a web html file to import videos and output video results.
+
 ## Please Read This First......
 Note: This is only an idea on how to make an app to “maybe” improve your badminton skills. This hasn’t been entirely proven to improve one’s skills.
 This is a medium level project that is a great start for Deep Learning Integration projects, learning AI-related models wouldn't be that hard after this project.
@@ -22,8 +28,9 @@ First, install the required python pip packages.
 ```
 pip install -r requirements.txt
 ```
-Here's the list of packages that we would be using today.
-- Mediapipe
-- TensorRT
-- Ultralytics
-- 
+You can run the `index_en.html` and the `server.py` for a quick preview of what we've acheived. There would be a small video for you to download and try it out.
+(Video is inside repo)
+
+## Course
+1. Introduction & Demo
+
