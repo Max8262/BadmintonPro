@@ -5,13 +5,13 @@ Badminton Pro is a software dedicated to the training and improvements of badmin
 Note: This is only an idea on how to make an app to “maybe” improve your badminton skills. This hasn’t been entirely proven to improve one’s skills.
 This is a medium level project that is a great start for Deep Learning Integration projects, learning AI-related models wouldn't be that hard after this project.
 
-# 📔 Table of Contents
+### 📔 Table of Contents
 1. Introduction & Demo
 2. Common Badminton Poses
 3. Data Collection
 4. Pose Classifiers
-5. Common Metrics
-6. YOLO Training
+5. YOLO Training
+6. Common Metrics
 7. Pose Error Detection
 8. OpenAI Integration
 
@@ -62,6 +62,19 @@ You can run the `index_en.html` and the `server.py` for a quick preview of what 
 13.	tensorrt (v10.8.0.43): Handles YOLO model quantization and optimization. 
 14.	ultralytics (v8.3.70): YOLOv11 object detection model library.
 
+# 2. Common Badminton Poses
+
+# 3. Data Collection
+
+# 4. Pose Classifiers
+
+# 5. YOLO Training
+
+# 6. Common Metrics
+
+# 7. Pose Error Detection
+
+# 8. OpenAI Integration
 
 
 
