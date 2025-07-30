@@ -1,0 +1,14 @@
+flask==3.1.0
+joblib==1.4.2
+matplotlib==3.10.0
+mediapipe==0.10.20
+moviepy==1.0.3
+numpy==1.26.4
+opencv-python==4.11.0.86
+openai==1.61.0
+pandas==2.2.3
+scikit-learn==1.6.1
+seaborn==0.13.2
+tensorflow==2.18.0
+tensorrt==10.8.0.43
+ultralytics==8.3.70
