@@ -56,7 +56,7 @@ You should see this UI when clicking `http://127.0.0.1:5000`.
 <img width="2516" height="1332" alt="image" src="https://github.com/user-attachments/assets/87e6f3ce-781f-45b1-ac19-86bb879f7eac" />
 
 There would also be a small video for you to download and try it out.
-(Video is inside repo)
+[(Video Link)](https://drive.google.com/file/d/1ebt2fHmnDWuiKouhDj8P2IUKjpiWqz_k/view?usp=sharing)
 
 ## 📦 Packages & Environment Introduction
 Python Version 3.10.9
