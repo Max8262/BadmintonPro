@@ -39,12 +39,22 @@ In this repo, we will be using YOLO & three different classifiers to accomplish 
 3. Has a phone that can record half a badminton ground range, with the person's full body being recorded. 
 
 ## ⏩ QuickStart
-First, install the required python pip packages.
-```
-
+First, clone this repo, then install the required packages. These are the commands below.
+```bash
+git clone https://github.com/Max8262/BadmintonPro.git
+cd BadmintonPro
 pip install -r requirements.txt
 ```
-You can run the `index_en.html` and the `server.py` for a quick preview of what we've acheived. There would be a small video for you to download and try it out.
+You can run the `server.py` for a quick preview of what we've achieved. 
+<img width="1905" height="1047" alt="image" src="https://github.com/user-attachments/assets/4fa87281-38e8-45e5-b1c6-b79888d86887" />
+
+After running this script, you should see this.
+<img width="1903" height="1046" alt="image" src="https://github.com/user-attachments/assets/36ea1990-d0d2-4479-af2a-bbb355754fbd" />
+
+You should see this UI when clicking `http://127.0.0.1:5000`.
+<img width="2516" height="1332" alt="image" src="https://github.com/user-attachments/assets/87e6f3ce-781f-45b1-ac19-86bb879f7eac" />
+
+There would also be a small video for you to download and try it out.
 (Video is inside repo)
 
 ## 📦 Packages & Environment Introduction
@@ -64,6 +74,10 @@ Python Version 3.10.9
 13.	tensorrt (v10.8.0.43): Handles YOLO model quantization and optimization. 
 14.	ultralytics (v8.3.70): YOLOv11 object detection model library.
 
+## 🛠️ Additional Tools
+Also, in order to train a CNN model, we would have to annotate where our object actually is, thus, we need to use an annotation tool to prepare our dataset. 
+In this project, we would be using CVAT as our main tool. However other tools are good as well(ImgLabel, LabelStudio, Roboflow). 
+
 # 2. Common Badminton Poses
 
 # 3. Data Collection
@@ -76,7 +90,7 @@ Python Version 3.10.9
 
 # 7. Pose Error Detection
 
-# 8. OpenAI Integration
+# 8. OpenAI Integration(Optional)
 
 
 
