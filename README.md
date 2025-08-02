@@ -41,12 +41,14 @@ In this repo, we will be using YOLO & three different classifiers to accomplish 
 ## ⏩ QuickStart
 First, install the required python pip packages.
 ```
+
 pip install -r requirements.txt
 ```
 You can run the `index_en.html` and the `server.py` for a quick preview of what we've acheived. There would be a small video for you to download and try it out.
 (Video is inside repo)
 
-## 📦 Packages Introduction
+## 📦 Packages & Environment Introduction
+Python Version 3.10.9
 1.	flask (v3.1.0): Provides lightweight web framework functionality. 
 2.	joblib (v1.4.2): Used for serializing and saving machine learning models. 
 3.	matplotlib (v3.10.0): Responsible for plotting experimental result charts. 
