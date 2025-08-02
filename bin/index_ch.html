@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羽球技術分析助手</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover, .btn:active {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .video-container {
+            width: 100%;
+            max-height: 400px;
+            background-color: #000;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        #videoPreview {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
+        .controls {
+            margin-top: 15px;
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .step {
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #e9f7ef;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #fadbd8;
+            display: none;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .result-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .error-list {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .error-list li {
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .error-list li:before {
+            content: "•";
+            color: #e74c3c;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .status-label {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+        
+        .status-good {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .status-bad {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .video-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .video-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .pose-badge {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .video-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .video-tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .video-tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .video-tab:hover {
+            background: #2980b9;
+            color: white;
+        }
+        
+        /* Fun Slider Styles */
+        .fun-slider-container {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .fun-slider-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .slider-description {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .slider-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .slider-label {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 500;
+            min-width: 60px;
+        }
+        
+        .color-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, 
+                #dee2e6 0%, 
+                #adb5bd 50%, 
+                #dee2e6 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        .color-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #6c757d;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .color-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            border-color: #495057;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .color-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #6c757d;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .threshold-value {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 600;
+            min-width: 45px;
+            text-align: center;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-text {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Animation for theme changes */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>羽球技術分析助手</h1>
+            <p>透過AI技術分析您的羽球動作</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- 步驟1: 上傳影片 -->
+            <div id="step1" class="step active">
+                <h2>上傳影片</h2>
+                <p>請選擇您想要分析的羽球影片</p>
+                
+                <button class="btn" id="uploadVideoBtn">從相簿選擇</button>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                
+                <div class="video-container hidden" id="videoPreviewContainer">
+                    <video id="videoPreview" controls></video>
+                </div>
+                
+                <div class="error-message" id="uploadError"></div>
+                
+                <button class="btn hidden" id="analyzeBtn">開始分析</button>
+            </div>
+            
+            <!-- 步驟2: 處理中 -->
+            <div id="step2" class="step">
+                <h2>影片處理中</h2>
+                <p>系統正在分析您的羽球動作，請稍候...</p>
+                
+                <div class="loader" id="loader" style="display: block;"></div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+                
+                <div id="processingSteps">
+                    <p id="step1Status">⏳ 羽球跟蹤 - 等待中...</p>
+                    <p id="step2Status">⏳ 姿勢分類 - 等待中...</p>
+                    <p id="step3Status">⏳ 錯誤檢測 - 等待中...</p>
+                    <p id="step4Status">⏳ AI教練分析 - 等待中...</p>
+                </div>
+            </div>
+            
+            <!-- 步驟3: 顯示結果 -->
+            <div id="step3" class="step">
+                <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏆 分析結果</h2>
+                
+                <div id="resultsSummary" style="text-align: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <!-- 總結信息將在這裡動態加載 -->
+                </div>
+                
+                <div id="videoTabs" class="video-tabs">
+                    <!-- 視頻標籤將在這裡動態加載 -->
+                </div>
+                
+                <div id="videosContainer">
+                    <!-- 所有視頻結果將在這裡動態加載 -->
+                </div>
+                
+                <button class="btn" id="startNewAnalysisBtn" style="margin-top: 20px;">🔄 分析新影片</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 服務器地址配置 - 修改為您的電腦IP地址和端口
+        // 將 'localhost' 改為您電腦的實際IP地址
+        // 例如: const SERVER_URL = 'http://192.168.1.100:5000';
+        const SERVER_URL = 'http://192.168.0.109:5000'; // 請修改為您的IP地址
+        
+        // BIBO Threshold Slider - Does absolutely nothing!
+        // This slider exists purely for show and has zero functionality
+        
+        // DOM元素
+        const uploadVideoBtn = document.getElementById('uploadVideoBtn');
+        const videoInput = document.getElementById('videoInput');
+        const videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadError = document.getElementById('uploadError');
+        const loader = document.getElementById('loader');
+        const progressBar = document.getElementById('progressBar');
+        const step1Status = document.getElementById('step1Status');
+        const step2Status = document.getElementById('step2Status');
+        const step3Status = document.getElementById('step3Status');
+        const step4Status = document.getElementById('step4Status');
+        const startNewAnalysisBtn = document.getElementById('startNewAnalysisBtn');
+        
+        let videoBlob = null;
+        let currentFileId = null;
+        let statusCheckInterval = null;
+        let currentVideoIndex = 0;
+        
+        // 所有步驟
+        const steps = document.querySelectorAll('.step');
+        
+        // BIBO Threshold Slider does absolutely nothing!
+        // Move it all you want - it's just for show 🎭
+        
+        // But let's make it look professional by updating the display value
+        const colorSlider = document.getElementById('colorSlider');
+        const thresholdValue = document.getElementById('thresholdValue');
+        
+        if (colorSlider && thresholdValue) {
+            colorSlider.addEventListener('input', (e) => {
+                thresholdValue.textContent = e.target.value;
+                // That's it! No actual functionality, just cosmetic value display
+            });
+        }
+        
+        // 切換顯示步驟
+        function showStep(stepNumber) {
+            steps.forEach((step, index) => {
+                if (index + 1 === stepNumber) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        // 上傳影片
+        uploadVideoBtn.addEventListener('click', () => {
+            videoInput.click();
+        });
+        
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                
+                // 檢查文件類型
+                if (!file.type.match('video.*')) {
+                    uploadError.textContent = '請選擇有效的影片文件';
+                    uploadError.style.display = 'block';
+                    return;
+                }
+                
+                // 檢查文件大小 (限制為100MB)
+                if (file.size > 1000 * 1024 * 1024) {
+                    uploadError.textContent = '影片大小不能超過100MB，目前檔案大小: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB';
+                    uploadError.style.display = 'block';
+                    return;
+                }
+                
+                // 存儲影片
+                videoBlob = file;
+                
+                // 預覽影片
+                videoPreview.src = URL.createObjectURL(file);
+                videoPreviewContainer.classList.remove('hidden');
+                analyzeBtn.classList.remove('hidden');
+                uploadError.style.display = 'none';
+            }
+        });
+        
+        // 分析影片按鈕
+        analyzeBtn.addEventListener('click', () => {
+            if (!videoBlob) {
+                uploadError.textContent = '請先上傳影片';
+                uploadError.style.display = 'block';
+                return;
+            }
+            
+            // 顯示處理步驟
+            showStep(2);
+            uploadVideoToServer();
+        });
+        
+        // 上傳影片到服務器
+        function uploadVideoToServer() {
+            // 禁用分析按鈕
+            analyzeBtn.disabled = true;
+            
+            // 創建FormData對象來上傳影片
+            const formData = new FormData();
+            formData.append('video', videoBlob, 'uploaded_video.mp4');
+            
+            // 發送請求到服務器
+            fetch(`${SERVER_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+                // 增加超時設定
+                signal: AbortSignal.timeout(300000) // 5分鐘超時
+            })
+            .then(response => {
+                console.log('Upload response status:', response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`上傳失敗 (${response.status}): ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // 保存文件ID
+                    currentFileId = data.file_id;
+                    
+                    // 開始檢查處理狀態
+                    startStatusCheck();
+                } else {
+                    throw new Error(data.message || '上傳失敗');
+                }
+            })
+            .catch(error => {
+                console.error('上傳錯誤:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+                
+                let errorMessage = '上傳失敗: ' + error.message;
+                
+                // 提供更具體的錯誤訊息
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '網絡連接失敗，請檢查：\n1. 服務器是否正在運行\n2. 網絡連接是否正常\n3. 影片檔案是否過大';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = '網絡錯誤，請檢查網絡連接';
+                } else if (error.message.includes('timeout')) {
+                    errorMessage = '上傳超時，請嘗試使用更小的影片檔案';
+                }
+                
+                uploadError.textContent = errorMessage;
+                uploadError.style.display = 'block';
+                showStep(1);
+                analyzeBtn.disabled = false;
+            });
+        }
+        
+        // 定期檢查處理狀態
+        function startStatusCheck() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+            }
+            
+            // 每2秒檢查一次狀態
+            statusCheckInterval = setInterval(() => {
+                fetch(`${SERVER_URL}/status/${currentFileId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 更新進度
+                    progressBar.style.width = data.progress + '%';
+                    progressBar.textContent = data.progress + '%';
+                    
+                    // 更新狀態訊息
+                    if (data.message) {
+                        updateProcessingStatus(data.message);
+                    }
+                    
+                    // 檢查是否完成
+                    if (data.status === 'completed') {
+                        clearInterval(statusCheckInterval);
+                        fetchResults();
+                    } else if (data.status === 'error') {
+                        clearInterval(statusCheckInterval);
+                        handleProcessingError(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('檢查狀態錯誤:', error);
+                    // 繼續檢查，除非明確失敗
+                });
+            }, 2000);
+        }
+        
+        // 根據狀態訊息更新處理步驟顯示
+        function updateProcessingStatus(message) {
+            if (message.includes('羽球跟蹤')) {
+                step1Status.innerHTML = '🔄 羽球跟蹤 - 處理中...';
+            } else if (message.includes('羽球跟蹤完成')) {
+                step1Status.innerHTML = '✅ 羽球跟蹤 - 完成';
+                step2Status.innerHTML = '🔄 姿勢分類 - 處理中...';
+            } else if (message.includes('姿勢分類完成')) {
+                step2Status.innerHTML = '✅ 姿勢分類 - 完成';
+                step3Status.innerHTML = '🔄 錯誤檢測 - 處理中...';
+            } else if (message.includes('錯誤檢測完成')) {
+                step3Status.innerHTML = '✅ 錯誤檢測 - 完成';
+                step4Status.innerHTML = '🔄 AI教練分析 - 處理中...';
+            } else if (message.includes('AI建議')) {
+                step4Status.innerHTML = '✅ AI教練分析 - 完成';
+            }
+        }
+        
+        // 處理過程中的錯誤
+        function handleProcessingError(message) {
+            uploadError.textContent = '處理失敗: ' + message;
+            uploadError.style.display = 'block';
+            showStep(1);
+            analyzeBtn.disabled = false;
+        }
+        
+        // 獲取處理結果
+        function fetchResults() {
+            fetch(`${SERVER_URL}/results/${currentFileId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('獲取結果失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received results:', data); // Debug log
+                // 顯示結果
+                showResults(data);
+            })
+            .catch(error => {
+                console.error('獲取結果錯誤:', error);
+                uploadError.textContent = '獲取結果失敗: ' + error.message;
+                uploadError.style.display = 'block';
+                showStep(1);
+                analyzeBtn.disabled = false;
+            });
+        }
+        
+        // 顯示結果
+        function showResults(data) {
+            try {
+                // 切換到結果頁面
+                showStep(3);
+                
+                // 檢查數據格式
+                if (!data || !data.videos || !Array.isArray(data.videos)) {
+                    throw new Error('無效的結果數據格式');
+                }
+                
+                // 所有可能的姿勢類型及其中文名稱
+                const poseTypeNames = {
+                    'clear': '高遠球',
+                    'net': '網前球',
+                    'drive': '平抽球', 
+                    'serve': '發球',
+                    'lift': '挑球',
+                    'drop': '吊球',
+                    'smash': '殺球',
+                    'other': '其他'
+                };
+                
+                // 顯示總結信息
+                const summaryDiv = document.getElementById('resultsSummary');
+                summaryDiv.innerHTML = `
+                    <h3>📊 分析完成！共分析了 ${data.total_videos || data.videos.length} 個動作片段</h3>
+                    <p style="color: #7f8c8d; margin-top: 5px;">點擊下方標籤查看每個動作的詳細分析</p>
+                `;
+                
+                // 創建視頻標籤
+                const videoTabsDiv = document.getElementById('videoTabs');
+                videoTabsDiv.innerHTML = '';
+                
+                // 創建視頻容器
+                const videosContainer = document.getElementById('videosContainer');
+                videosContainer.innerHTML = '';
+                
+                // 處理每個視頻
+                data.videos.forEach((video, index) => {
+                    // 創建標籤
+                    const tab = document.createElement('button');
+                    tab.className = 'video-tab' + (index === 0 ? ' active' : '');
+                    const poseType = video.pose_type || '未知';
+                    const poseName = poseTypeNames[poseType.toLowerCase()] || poseType;
+                    tab.textContent = `片段 ${index + 1} - ${poseName}`;
+                    tab.onclick = () => showVideoResult(index);
+                    videoTabsDiv.appendChild(tab);
+                    
+                    // 創建視頻結果區域
+                    const videoSection = document.createElement('div');
+                    videoSection.className = 'video-section';
+                    videoSection.id = `video-section-${index}`;
+                    videoSection.style.display = index === 0 ? 'block' : 'none';
+                    
+                    // 構建每個視頻的HTML
+                    let videoHTML = `
+                        <div class="video-section-header">
+                            <h3 class="video-section-title">片段 ${index + 1} 分析結果</h3>
+                            <span class="pose-badge">${poseName}</span>
+                        </div>
+                        
+                        <div class="video-container" style="margin-bottom: 20px; min-height: 200px;">
+                            <video controls style="width: 100%; height: auto; display: block; border-radius: 8px;" 
+                                   onloadeddata="console.log('Video loaded:', this.src)" 
+                                   onerror="console.error('Video error:', this.error, this.src)">
+                                <source src="${SERVER_URL}${video.video_url}" type="video/mp4">
+                                您的瀏覽器不支持視頻播放
+                            </video>
+                        </div>
+                    `;
+                    
+                    console.log(`Video ${index + 1} URL: ${SERVER_URL}${video.video_url}`);
+                    
+                    // 添加錯誤列表（如果有）
+                    if (video.errors && video.errors.length > 0) {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #e74c3c;">⚠️ 發現的技術問題：</div>
+                                <ul class="error-list">
+                                    ${video.errors.map(error => `<li style="color: #c0392b; font-weight: 500;">${error}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #27ae60;">🎉 優秀表現！</div>
+                                <p style="color: #27ae60; font-size: 16px;">您的${poseName}動作非常標準！未檢測到明顯錯誤。</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // 添加AI教練建議
+                    if (video.openai_advice) {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #8e44ad;">🤖 AI教練專業建議：</div>
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <div style="white-space: pre-line; line-height: 1.6; font-size: 15px;">${video.openai_advice}</div>
+                                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 13px; opacity: 0.9;">
+                                        🎯 由AI技術分析系統提供個人化建議
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 添加評估
+                    const errorCount = video.errors ? video.errors.length : 0;
+                    const technicalLevel = errorCount === 0 ? '優秀' : errorCount <= 2 ? '良好' : '需改進';
+                    const technicalColor = errorCount === 0 ? '#27ae60' : errorCount <= 2 ? '#f39c12' : '#e74c3c';
+                    
+                    videoHTML += `
+                        <div class="result-item">
+                            <div class="result-header">📊 動作評估：</div>
+                            <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                <p><strong>動作類型：</strong> <span style="color: #2c3e50;">${poseName}</span></p>
+                                <p><strong>技術水平：</strong> <span style="color: ${technicalColor}; font-weight: bold;">${technicalLevel}</span></p>
+                                <p><strong>檢測錯誤數：</strong> <span style="color: ${technicalColor};">${errorCount} 個</span></p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    videoSection.innerHTML = videoHTML;
+                    videosContainer.appendChild(videoSection);
+                });
+                
+                // 設置當前顯示的視頻索引
+                currentVideoIndex = 0;
+                
+            } catch (error) {
+                console.error('顯示結果時出錯:', error);
+                uploadError.textContent = '顯示結果失敗: ' + error.message;
+                uploadError.style.display = 'block';
+                showStep(1);
+            }
+        }
+        
+        // 顯示特定視頻結果
+        function showVideoResult(index) {
+            // 更新標籤狀態
+            document.querySelectorAll('.video-tab').forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // 顯示對應的視頻區域
+            document.querySelectorAll('.video-section').forEach((section, i) => {
+                if (i === index) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+            
+            currentVideoIndex = index;
+        }
+        
+        // 開始新的分析
+        startNewAnalysisBtn.addEventListener('click', () => {
+            // 重置所有狀態
+            videoBlob = null;
+            currentFileId = null;
+            currentVideoIndex = 0;
+            videoPreview.src = '';
+            videoPreviewContainer.classList.add('hidden');
+            analyzeBtn.classList.add('hidden');
+            analyzeBtn.disabled = false;
+            uploadError.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            step1Status.innerHTML = '⏳ 羽球跟蹤 - 等待中...';
+            step2Status.innerHTML = '⏳ 姿勢分類 - 等待中...';
+            step3Status.innerHTML = '⏳ 錯誤檢測 - 等待中...';
+            step4Status.innerHTML = '⏳ AI教練分析 - 等待中...';
+            videoInput.value = '';
+            
+            // 清空結果
+            document.getElementById('resultsSummary').innerHTML = '';
+            document.getElementById('videoTabs').innerHTML = '';
+            document.getElementById('videosContainer').innerHTML = '';
+            
+            // 返回上傳頁面
+            showStep(1);
+        });
+    </script>
+</body>
+</html>

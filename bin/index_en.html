@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Technique Analysis Assistant</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover, .btn:active {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .video-container {
+            width: 100%;
+            max-height: 400px;
+            background-color: #000;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        #videoPreview {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .step {
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #e9f7ef;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #fadbd8;
+            display: none;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .result-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .error-list {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .error-list li {
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .error-list li:before {
+            content: "•";
+            color: #e74c3c;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .video-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .video-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .pose-badge {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .video-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .video-tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .video-tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .video-tab:hover {
+            background: #2980b9;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Badminton Technique Analysis Assistant</h1>
+            <p>Analyze your badminton movements using AI technology</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Step 1: Upload Video -->
+            <div id="step1" class="step active">
+                <h2>Upload Video</h2>
+                <p>Please select the badminton video you want to analyze</p>
+                
+                <button class="btn" id="uploadVideoBtn">Select from Gallery</button>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                
+                <div class="video-container hidden" id="videoPreviewContainer">
+                    <video id="videoPreview" controls></video>
+                </div>
+                
+                <div class="error-message" id="uploadError"></div>
+                
+                <button class="btn hidden" id="analyzeBtn">Start Analysis</button>
+            </div>
+            
+            <!-- Step 2: Processing -->
+            <div id="step2" class="step">
+                <h2>Video Processing</h2>
+                <p>The system is analyzing your badminton movements, please wait...</p>
+                
+                <div class="loader" id="loader" style="display: block;"></div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+                
+                <div id="processingSteps">
+                    <p id="step1Status">⏳ Shuttlecock Tracking - Waiting...</p>
+                    <p id="step2Status">⏳ Pose Classification - Waiting...</p>
+                    <p id="step3Status">⏳ Error Detection - Waiting...</p>
+                    <p id="step4Status">⏳ AI Coach Analysis - Waiting...</p>
+                </div>
+            </div>
+            
+            <!-- Step 3: Display Results -->
+            <div id="step3" class="step">
+                <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏆 Analysis Results</h2>
+                
+                <div id="resultsSummary" style="text-align: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <!-- Summary information will be dynamically loaded here -->
+                </div>
+                
+                <div id="videoTabs" class="video-tabs">
+                    <!-- Video tabs will be dynamically loaded here -->
+                </div>
+                
+                <div id="videosContainer">
+                    <!-- All video results will be dynamically loaded here -->
+                </div>
+                
+                <button class="btn" id="startNewAnalysisBtn" style="margin-top: 20px;">🔄 Analyze New Video</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://192.168.0.109:5000';
+        
+        const uploadVideoBtn = document.getElementById('uploadVideoBtn');
+        const videoInput = document.getElementById('videoInput');
+        const videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadError = document.getElementById('uploadError');
+        const progressBar = document.getElementById('progressBar');
+        const step1Status = document.getElementById('step1Status');
+        const step2Status = document.getElementById('step2Status');
+        const step3Status = document.getElementById('step3Status');
+        const step4Status = document.getElementById('step4Status');
+        const startNewAnalysisBtn = document.getElementById('startNewAnalysisBtn');
+        
+        let videoBlob = null;
+        let currentFileId = null;
+        let statusCheckInterval = null;
+        let currentVideoIndex = 0;
+        
+        const steps = document.querySelectorAll('.step');
+        
+        function showStep(stepNumber) {
+            steps.forEach((step, index) => {
+                if (index + 1 === stepNumber) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        uploadVideoBtn.addEventListener('click', () => {
+            videoInput.click();
+        });
+        
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                
+                if (!file.type.match('video.*')) {
+                    uploadError.textContent = 'Please select a valid video file';
+                    uploadError.style.display = 'block';
+                    return;
+                }
+                
+                if (file.size > 1000 * 1024 * 1024) {
+                    uploadError.textContent = 'Video size cannot exceed 100MB, current file size: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB';
+                    uploadError.style.display = 'block';
+                    return;
+                }
+                
+                videoBlob = file;
+                videoPreview.src = URL.createObjectURL(file);
+                videoPreviewContainer.classList.remove('hidden');
+                analyzeBtn.classList.remove('hidden');
+                uploadError.style.display = 'none';
+            }
+        });
+        
+        analyzeBtn.addEventListener('click', () => {
+            if (!videoBlob) {
+                uploadError.textContent = 'Please upload a video first';
+                uploadError.style.display = 'block';
+                return;
+            }
+            
+            showStep(2);
+            uploadVideoToServer();
+        });
+        
+        function uploadVideoToServer() {
+            analyzeBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('video', videoBlob, 'uploaded_video.mp4');
+            
+            fetch(`${SERVER_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+                signal: AbortSignal.timeout(300000)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Upload failed (${response.status}): ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    currentFileId = data.file_id;
+                    startStatusCheck();
+                } else {
+                    throw new Error(data.message || 'Upload failed');
+                }
+            })
+            .catch(error => {
+                let errorMessage = 'Upload failed: ' + error.message;
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Network connection failed, please check: server running, network connection, file size';
+                }
+                
+                uploadError.textContent = errorMessage;
+                uploadError.style.display = 'block';
+                showStep(1);
+                analyzeBtn.disabled = false;
+            });
+        }
+        
+        function startStatusCheck() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+            }
+            
+            statusCheckInterval = setInterval(() => {
+                fetch(`${SERVER_URL}/status/${currentFileId}`)
+                .then(response => response.json())
+                .then(data => {
+                    progressBar.style.width = data.progress + '%';
+                    progressBar.textContent = data.progress + '%';
+                    
+                    if (data.message) {
+                        updateProcessingStatus(data.message);
+                    }
+                    
+                    if (data.status === 'completed') {
+                        clearInterval(statusCheckInterval);
+                        fetchResults();
+                    } else if (data.status === 'error') {
+                        clearInterval(statusCheckInterval);
+                        handleProcessingError(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Status check error:', error);
+                });
+            }, 2000);
+        }
+        
+        function updateProcessingStatus(message) {
+            if (message.includes('Shuttlecock tracking') || message.includes('羽球跟蹤')) {
+                step1Status.innerHTML = '🔄 Shuttlecock Tracking - Processing...';
+            } else if (message.includes('tracking completed') || message.includes('羽球跟蹤完成')) {
+                step1Status.innerHTML = '✅ Shuttlecock Tracking - Completed';
+                step2Status.innerHTML = '🔄 Pose Classification - Processing...';
+            } else if (message.includes('classification completed') || message.includes('姿勢分類完成')) {
+                step2Status.innerHTML = '✅ Pose Classification - Completed';
+                step3Status.innerHTML = '🔄 Error Detection - Processing...';
+            } else if (message.includes('error detection completed') || message.includes('錯誤檢測完成')) {
+                step3Status.innerHTML = '✅ Error Detection - Completed';
+                step4Status.innerHTML = '🔄 AI Coach Analysis - Processing...';
+            } else if (message.includes('AI suggestions') || message.includes('AI建議')) {
+                step4Status.innerHTML = '✅ AI Coach Analysis - Completed';
+            }
+        }
+        
+        function handleProcessingError(message) {
+            uploadError.textContent = 'Processing failed: ' + message;
+            uploadError.style.display = 'block';
+            showStep(1);
+            analyzeBtn.disabled = false;
+        }
+        
+        function fetchResults() {
+            fetch(`${SERVER_URL}/results/${currentFileId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch results');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showResults(data);
+            })
+            .catch(error => {
+                uploadError.textContent = 'Failed to fetch results: ' + error.message;
+                uploadError.style.display = 'block';
+                showStep(1);
+                analyzeBtn.disabled = false;
+            });
+        }
+        
+        function showResults(data) {
+            try {
+                showStep(3);
+                
+                if (!data || !data.videos || !Array.isArray(data.videos)) {
+                    throw new Error('Invalid result data format');
+                }
+                
+                const poseTypeNames = {
+                    'clear': 'Clear',
+                    'net': 'Net Shot',
+                    'drive': 'Drive', 
+                    'serve': 'Serve',
+                    'lift': 'Lift',
+                    'drop': 'Drop Shot',
+                    'smash': 'Smash',
+                    'other': 'Other'
+                };
+                
+                const summaryDiv = document.getElementById('resultsSummary');
+                summaryDiv.innerHTML = `
+                    <h3>📊 Analysis Complete! Analyzed ${data.total_videos || data.videos.length} movement segments</h3>
+                    <p style="color: #7f8c8d; margin-top: 5px;">Click the tabs below to view detailed analysis of each movement</p>
+                `;
+                
+                const videoTabsDiv = document.getElementById('videoTabs');
+                videoTabsDiv.innerHTML = '';
+                
+                const videosContainer = document.getElementById('videosContainer');
+                videosContainer.innerHTML = '';
+                
+                data.videos.forEach((video, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = 'video-tab' + (index === 0 ? ' active' : '');
+                    const poseType = video.pose_type || 'Unknown';
+                    const poseName = poseTypeNames[poseType.toLowerCase()] || poseType;
+                    tab.textContent = `Segment ${index + 1} - ${poseName}`;
+                    tab.onclick = () => showVideoResult(index);
+                    videoTabsDiv.appendChild(tab);
+                    
+                    const videoSection = document.createElement('div');
+                    videoSection.className = 'video-section';
+                    videoSection.id = `video-section-${index}`;
+                    videoSection.style.display = index === 0 ? 'block' : 'none';
+                    
+                    let videoHTML = `
+                        <div class="video-section-header">
+                            <h3 class="video-section-title">Segment ${index + 1} Analysis Results</h3>
+                            <span class="pose-badge">${poseName}</span>
+                        </div>
+                        
+                        <div class="video-container" style="margin-bottom: 20px;">
+                            <video controls style="width: 100%; height: auto; border-radius: 8px;">
+                                <source src="${SERVER_URL}${video.video_url}" type="video/mp4">
+                                Your browser does not support video playback
+                            </video>
+                        </div>
+                    `;
+                    
+                    if (video.errors && video.errors.length > 0) {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #e74c3c;">⚠️ Technical Issues Found:</div>
+                                <ul class="error-list">
+                                    ${video.errors.map(error => `<li style="color: #c0392b;">${error}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #27ae60;">🎉 Excellent Performance!</div>
+                                <p style="color: #27ae60;">Your ${poseName} technique is very standard! No obvious errors detected.</p>
+                            </div>
+                        `;
+                    }
+                    
+                    if (video.openai_advice) {
+                        videoHTML += `
+                            <div class="result-item">
+                                <div class="result-header" style="color: #8e44ad;">🤖 AI Coach Professional Advice:</div>
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-top: 10px;">
+                                    <div style="white-space: pre-line; line-height: 1.6;">${video.openai_advice}</div>
+                                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 13px; opacity: 0.9;">
+                                        🎯 Personalized advice provided by AI analysis system
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    const errorCount = video.errors ? video.errors.length : 0;
+                    const technicalLevel = errorCount === 0 ? 'Excellent' : errorCount <= 2 ? 'Good' : 'Needs Improvement';
+                    const technicalColor = errorCount === 0 ? '#27ae60' : errorCount <= 2 ? '#f39c12' : '#e74c3c';
+                    
+                    videoHTML += `
+                        <div class="result-item">
+                            <div class="result-header">📊 Movement Assessment:</div>
+                            <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                <p><strong>Movement Type:</strong> ${poseName}</p>
+                                <p><strong>Technical Level:</strong> <span style="color: ${technicalColor}; font-weight: bold;">${technicalLevel}</span></p>
+                                <p><strong>Errors Detected:</strong> <span style="color: ${technicalColor};">${errorCount} errors</span></p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    videoSection.innerHTML = videoHTML;
+                    videosContainer.appendChild(videoSection);
+                });
+                
+                currentVideoIndex = 0;
+                
+            } catch (error) {
+                uploadError.textContent = 'Failed to display results: ' + error.message;
+                uploadError.style.display = 'block';
+                showStep(1);
+            }
+        }
+        
+        function showVideoResult(index) {
+            document.querySelectorAll('.video-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            
+            document.querySelectorAll('.video-section').forEach((section, i) => {
+                section.style.display = i === index ? 'block' : 'none';
+            });
+            
+            currentVideoIndex = index;
+        }
+        
+        startNewAnalysisBtn.addEventListener('click', () => {
+            videoBlob = null;
+            currentFileId = null;
+            currentVideoIndex = 0;
+            videoPreview.src = '';
+            videoPreviewContainer.classList.add('hidden');
+            analyzeBtn.classList.add('hidden');
+            analyzeBtn.disabled = false;
+            uploadError.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            step1Status.innerHTML = '⏳ Shuttlecock Tracking - Waiting...';
+            step2Status.innerHTML = '⏳ Pose Classification - Waiting...';
+            step3Status.innerHTML = '⏳ Error Detection - Waiting...';
+            step4Status.innerHTML = '⏳ AI Coach Analysis - Waiting...';
+            videoInput.value = '';
+            
+            document.getElementById('resultsSummary').innerHTML = '';
+            document.getElementById('videoTabs').innerHTML = '';
+            document.getElementById('videosContainer').innerHTML = '';
+            
+            showStep(1);
+        });
+    </script>
+</body>
+</html>
