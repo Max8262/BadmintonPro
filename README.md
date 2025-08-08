@@ -82,7 +82,7 @@ In this project, we would be using CVAT as our main tool. However other tools ar
 # 2. Common Badminton Poses & Expert Poses
 Badminton Poses vary a lot, additionally, pro players have their own unique style of play, thus we want amateurs to first learn the orthodox/standard poses. After discussion with several badminton experts, we decided to add these poses for amateurs to learn, clear, drive, lift, backhand serve, and net shot. We didn't add smash because for amateurs, this wasn't considered necessary for them to learn. The list below contains the specific pose with their correspondent pictures and their common errors.
 
-Pose Name & Pictures
+## Pose Name & Pictures
 1. Clear - Commonly used to move the opponent or squeeze their space.
    <img width="622" height="145" alt="image" src="https://github.com/user-attachments/assets/41896b2d-603d-4f0d-baa6-d701db01580d" />
 2. Drive - An attacking technique that typically appears when returning a smash.
@@ -92,8 +92,7 @@ Pose Name & Pictures
 4. Net Shot - Can move the opponent and also lead them to hit a high ball, facilitating attacks.
    <img width="889" height="158" alt="image" src="https://github.com/user-attachments/assets/c09ec1fb-a27d-4a22-a571-1e1670e42821" />
 5. Backhand Serve - Guides the development of the game at the beginning of a match.
-
-
+   <img width="802" height="193" alt="image" src="https://github.com/user-attachments/assets/3c6844ba-a0fd-4487-8529-b6b3a463aabe" />
 
 <table>
   <tr>
@@ -179,6 +178,8 @@ Pose Name & Pictures
     <td>The serve position and attacking point should be positioned close to the waist.</td>
   </tr>
 </table>
+
+
 
 # 3. Data Collection
 
