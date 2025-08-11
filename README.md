@@ -106,7 +106,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
   <tr>
     <td rowspan="3"><strong>Clear</strong></td>
     <td>1. Incomplete lateral body positioning</td>
-    <td rowspan="3"><img src="clear-diagram.jpg" alt="Clear technique" width="200"></td>
+    <td rowspan="3"><img src="images/clear.png" alt="Clear technique" width="200"></td>
     <td>The body's trunk rotation is insufficient, unable to effectively utilize body power to hit the ball.</td>
   </tr>
   <tr>
@@ -122,7 +122,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
   <tr>
     <td rowspan="2"><strong>Drive</strong></td>
     <td>1. Ball path not raised</td>
-    <td rowspan="2"><img src="drive-diagram.jpg" alt="Drive technique" width="200"></td>
+    <td rowspan="2"><img src="images/drive.png" alt="Drive technique" width="200"></td>
     <td>Unable to immediately raise and prepare for the next ball.</td>
   </tr>
   <tr>
@@ -134,7 +134,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
   <tr>
     <td rowspan="3"><strong>Lift</strong></td>
     <td>1. Knee extension</td>
-    <td rowspan="3"><img src="lift-diagram.jpg" alt="Lift technique" width="200"></td>
+    <td rowspan="3"><img src="images/lift.png" alt="Lift technique" width="200"></td>
     <td>Knee extends out of the foot, leg angle less than 90 degrees, body center of gravity concentrated on the knee.</td>
   </tr>
   <tr>
@@ -150,7 +150,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
   <tr>
     <td rowspan="4"><strong>Net Drop</strong></td>
     <td>1. Wrist extension</td>
-    <td rowspan="4"><img src="netdrop-diagram.jpg" alt="Net drop technique" width="200"></td>
+    <td rowspan="4"><img src="images/net.png" alt="Net drop technique" width="200"></td>
     <td>The ball is too far from the body, no extension, wrist angle less than 120 degrees.</td>
   </tr>
   <tr>
@@ -170,7 +170,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
   <tr>
     <td rowspan="2"><strong>Serve</strong></td>
     <td>1. No elbow flexion forward</td>
-    <td rowspan="2"><img src="serve-diagram.jpg" alt="Serve technique" width="200"></td>
+    <td rowspan="2"><img src="images/serve.png" alt="Serve technique" width="200"></td>
     <td>The serve must use elbow flexion forward, not elbow extension behind.</td>
   </tr>
   <tr>
