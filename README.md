@@ -182,6 +182,7 @@ Badminton Poses vary a lot, additionally, pro players have their own unique styl
 
 
 # 3. Data Collection
+For every AI model out there, the hardest part is the data collection, without large amounts of data, AI is basically useless. In our project, we self recorded and audited every badminton photo. What we did was we first record our data as a video, then we 
 
 # 4. Pose Classifiers
 
